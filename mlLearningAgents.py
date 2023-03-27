@@ -64,6 +64,9 @@ class GameStateFeatures:
             legal.remove(Directions.STOP)
 
         return legal
+
+    def getGameState(self):
+        return self.state
    
 
 
@@ -143,7 +146,7 @@ class QLearnAgent(Agent):
             The reward assigned for the given trajectory
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return endState.getScore() - startState.getScore()
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -226,7 +229,7 @@ class QLearnAgent(Agent):
             Number of times that the action has been taken in a given state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.freqTable[(state, action)]
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
