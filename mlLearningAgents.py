@@ -265,8 +265,7 @@ class QLearnAgent(Agent):
             # self.prevReward = self.computeReward(self.prevState, currState)
             self.prevState = currState
 
-
-
+        return self.prevAction
 
 
     def final(self, state: GameState):
