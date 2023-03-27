@@ -274,9 +274,8 @@ class QLearnAgent(Agent):
         currState = GameStateFeatures(state)
         qValues = [[self.getQValue(currState, action), action] for action in legal]
 
-        # if terminal ==> q[s, None] <-- r'
-
-        # if terminal ==> q[s, None] <-- r'
+        if not legal:
+            self.QTable[(self.prevState, None)] = self.computeReward()
         if self.prevState:
             action = max(qValues, key=lambda x: x[0])[1] if qValues else None
             self.learn(self.prevState, action, self.prevReward, currState)
