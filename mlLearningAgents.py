@@ -193,7 +193,7 @@ class QLearnAgent(Agent):
         """
 
         maxQValue = self.maxQValue(nextState)
-        tdError = reward + self.gamma * (maxQValue - self.QTable[(state, action)])
+        tdError = reward + self.gamma * (maxQValue - self.getQValue(state, action))
         self.QTable[(state, self.prevAction)] += self.alpha * tdError
 
 
