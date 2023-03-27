@@ -81,6 +81,7 @@ class QLearnAgent(Agent):
         self.numTraining = int(numTraining)
         # Count the number of games we have played
         self.episodesSoFar = 0
+        self.QValues = util.Counter()
 
     # Accessor functions for the variable episodesSoFar controlling learning
     def incrementEpisodesSoFar(self):
@@ -137,8 +138,8 @@ class QLearnAgent(Agent):
         Returns:
             Q(state, action)
         """
-        "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+        return self.QValues[state, action]
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -150,8 +151,14 @@ class QLearnAgent(Agent):
         Returns:
             q_value: the maximum estimated Q-value attainable from the state
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        legal = state.getLegal()
+
+        if not legal:
+            return 0.0
+
+        return max([self.getQValue(state, action) for action in legal])
+
+        # util.raiseNotDefined()
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -254,10 +261,11 @@ class QLearnAgent(Agent):
         print("Score: ", state.getScore())
 
         stateFeatures = GameStateFeatures(state)
+        maxQValue = self.maxQValue(stateFeatures)
 
-        # Now pick what action to take.
-        # The current code shows how to do that but just makes the choice randomly.
-        return random.choice(legal)
+        for action in legal:
+            if maxQValue == self.getQValue(stateFeatures, action):
+                return action
 
     def final(self, state: GameState):
         """
