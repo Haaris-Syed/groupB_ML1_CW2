@@ -64,6 +64,9 @@ class GameStateFeatures:
             legal.remove(Directions.STOP)
 
         return legal
+
+    def getGameState(self):
+        return self.state
    
 
 
