@@ -47,13 +47,13 @@ class GameStateFeatures:
             state: A given game state object
         """
 
-          print("Legal moves: ", legal)
-        print("Pacman position: ", state.getPacmanPosition())
-        print("Ghost positions:", state.getGhostPositions())
-        print("Food locations: ")
-        print(state.getFood())
-        print("Score: ", state.getScore())
-        util.raiseNotDefined()
+        # print("Legal moves: ", legal)
+        # print("Pacman position: ", state.getPacmanPosition())
+        # print("Ghost positions:", state.getGhostPositions())
+        # print("Food locations: ")
+        # print(state.getFood())
+        # print("Score: ", state.getScore())
+        # util.raiseNotDefined()
 
 
 class QLearnAgent(Agent):
@@ -161,6 +161,9 @@ class QLearnAgent(Agent):
             q_value: the maximum estimated Q-value attainable from the state
         """
         # util.raiseNotDefined()
+        actions = state.getLegalActions()
+
+        return max([self.getQValue(state, action) for action in actions])
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
