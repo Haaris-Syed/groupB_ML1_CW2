@@ -46,13 +46,25 @@ class GameStateFeatures:
         Args:
             state: A given game state object
         """
-        #
-        # print("Legal moves: ", legal)
-        # print("Pacman position: ", state.getPacmanPosition())
-        # print("Ghost positions:", state.getGhostPositions())
-        # print("Food locations: ")
-        # print(state.getFood())
-        # util.raiseNotDefined()
+        self.state = state
+        self.pacPosition = state.getPacmanPosition()
+        self.ghostPositions = state.getGhostPositions()
+        self.foodLocs = state.getFood()
+        # state.getScore()
+
+    def __hash__(self) -> int:
+        hash((self.pacPosition, self.ghostPositions, self.foodLocs))
+        
+    def __eq__(self, __value: object) -> bool:
+        hash(self) == hash(__value)
+    
+    def getLegalActions(self):
+        legal = self.state.getLegalPacmanActions()
+        if Directions.STOP in legal:
+            legal.remove(Directions.STOP)
+
+        return legal
+   
 
 
 class QLearnAgent(Agent):
@@ -181,7 +193,7 @@ class QLearnAgent(Agent):
         """
 
         maxQValue = self.maxQValue(nextState)
-        tdError = reward + self.gamma * (maxQValue - self.QTable[(state, action)])
+        tdError = reward + self.gamma * (maxQValue - self.getQValue(state, action))
         self.QTable[(state, self.prevAction)] += self.alpha * tdError
 
 
