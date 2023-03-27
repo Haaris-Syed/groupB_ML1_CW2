@@ -46,13 +46,12 @@ class GameStateFeatures:
         Args:
             state: A given game state object
         """
-
+        #
         # print("Legal moves: ", legal)
         # print("Pacman position: ", state.getPacmanPosition())
         # print("Ghost positions:", state.getGhostPositions())
         # print("Food locations: ")
         # print(state.getFood())
-        # print("Score: ", state.getScore())
         # util.raiseNotDefined()
 
 
@@ -147,8 +146,7 @@ class QLearnAgent(Agent):
         Returns:
             Q(state, action)
         """
-        util.raiseNotDefined()
-        return self.QValues[state, action]
+        return self.QTable[(state, action)]
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -181,8 +179,11 @@ class QLearnAgent(Agent):
             nextState: the resulting state
             reward: the reward received on this trajectory
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        maxQValue = self.maxQValue(nextState)
+        tdError = reward + self.gamma * (maxQValue - self.QTable[(state, action)])
+        self.QTable[(state, self.prevAction)] += self.alpha * tdError
+
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -252,6 +253,7 @@ class QLearnAgent(Agent):
         Returns:
             The action to take
         """
+        print("Score: ", state.getScore())
         # The data we have about the state of the game
         legal = state.getLegalPacmanActions()
         if Directions.STOP in legal:
