@@ -198,7 +198,7 @@ class QLearnAgent(Agent):
             action: Action taken
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self.QTable[(state, action)] = self.QTable.get([(state, action)], 0) + 1
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
