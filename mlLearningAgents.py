@@ -226,7 +226,7 @@ class QLearnAgent(Agent):
             Number of times that the action has been taken in a given state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.freqTable[(state, action)]
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
