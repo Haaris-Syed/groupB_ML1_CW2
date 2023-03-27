@@ -52,10 +52,10 @@ class GameStateFeatures:
         self.foodLocs = state.getFood()
         # state.getScore()
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         hash((self.pacPosition, self.ghostPositions, self.foodLocs))
         
-    def __eq__(self, __value: object) -> bool:
+    def __eq__(self, __value: object):
         hash(self) == hash(__value)
     
     def getLegalActions(self):
@@ -67,7 +67,6 @@ class GameStateFeatures:
 
     def getGameState(self):
         return self.state
-   
 
 
 class QLearnAgent(Agent):
@@ -199,7 +198,6 @@ class QLearnAgent(Agent):
         tdError = reward + self.gamma * (maxQValue - self.getQValue(state, action))
         self.QTable[(state, self.prevAction)] += self.alpha * tdError
 
-
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
     def updateCount(self,
@@ -276,13 +274,14 @@ class QLearnAgent(Agent):
 
         currState = GameStateFeatures(state)
         qValues = [[self.getQValue(currState, action), action] for action in legal]
+        rewardSignal = self.computeReward(self.prevState.getGameState(), currState.getGameState())
 
         if not legal:
-            self.QTable[(self.prevState, None)] = self.computeReward()
+            self.QTable[(self.prevState, None)] = rewardSignal
         if self.prevState:
             action = max(qValues, key=lambda x: x[0])[1] if qValues else None
             self.learn(self.prevState, action, self.prevReward, currState)
-            self.prevState, self.prevAction, self.prevReward = currState, action, self.computeReward(state, )
+            self.prevState, self.prevAction, self.prevReward = currState, action, rewardSignal
 
         return self.prevAction
 
