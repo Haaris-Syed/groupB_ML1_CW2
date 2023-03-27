@@ -159,6 +159,9 @@ class QLearnAgent(Agent):
             q_value: the maximum estimated Q-value attainable from the state
         """
         # util.raiseNotDefined()
+        actions = state.getLegalActions()
+
+        return max([self.getQValue(state, action) for action in actions])
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
