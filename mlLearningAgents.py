@@ -264,14 +264,13 @@ class QLearnAgent(Agent):
 
         # if terminal ==> q[s, None] <-- r'
 
+        # if terminal ==> q[s, None] <-- r'
         if self.prevState:
-            # update qtable
-            self.prevAction = max(qValues, key=lambda x: x[0])[1] if qValues else None
-            # self.prevReward = self.computeReward(self.prevState, currState)
-            self.prevState = currState
+            action = max(qValues, key=lambda x: x[0])[1] if qValues else None
+            self.learn(self.prevState, action, self.prevReward, currState)
+            self.prevState, self.prevAction, self.prevReward = currState, action, self.computeReward(state, )
 
         return self.prevAction
-
 
     def final(self, state: GameState):
         """
