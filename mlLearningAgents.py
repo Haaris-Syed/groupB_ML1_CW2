@@ -47,7 +47,12 @@ class GameStateFeatures:
             state: A given game state object
         """
 
-        "*** YOUR CODE HERE ***"
+          print("Legal moves: ", legal)
+        print("Pacman position: ", state.getPacmanPosition())
+        print("Ghost positions:", state.getGhostPositions())
+        print("Food locations: ")
+        print(state.getFood())
+        print("Score: ", state.getScore())
         util.raiseNotDefined()
 
 
@@ -81,7 +86,11 @@ class QLearnAgent(Agent):
         self.numTraining = int(numTraining)
         # Count the number of games we have played
         self.episodesSoFar = 0
-        self.QValues = util.Counter()
+        self.QTable = dict()
+        self.freqTable = dict()
+        self.prevState = None
+        self.prevAction = None
+        self.prevReward = None
 
     # Accessor functions for the variable episodesSoFar controlling learning
     def incrementEpisodesSoFar(self):
@@ -151,13 +160,6 @@ class QLearnAgent(Agent):
         Returns:
             q_value: the maximum estimated Q-value attainable from the state
         """
-        legal = state.getLegal()
-
-        if not legal:
-            return 0.0
-
-        return max([self.getQValue(state, action) for action in legal])
-
         # util.raiseNotDefined()
 
     # WARNING: You will be tested on the functionality of this method
@@ -252,20 +254,20 @@ class QLearnAgent(Agent):
         if Directions.STOP in legal:
             legal.remove(Directions.STOP)
 
-        # logging to help you understand the inputs, feel free to remove
-        print("Legal moves: ", legal)
-        print("Pacman position: ", state.getPacmanPosition())
-        print("Ghost positions:", state.getGhostPositions())
-        print("Food locations: ")
-        print(state.getFood())
-        print("Score: ", state.getScore())
+        currState = GameStateFeatures(state)
+        qValues = [[self.getQValue(currState, action), action] for action in legal]
 
-        stateFeatures = GameStateFeatures(state)
-        maxQValue = self.maxQValue(stateFeatures)
+        # if terminal ==> q[s, None] <-- r'
 
-        for action in legal:
-            if maxQValue == self.getQValue(stateFeatures, action):
-                return action
+        if self.prevState:
+            # update qtable
+            self.prevAction = max(qValues, key=lambda x: x[0])[1] if qValues else None
+            # self.prevReward = self.computeReward(self.prevState, currState)
+            self.prevState = currState
+
+
+
+
 
     def final(self, state: GameState):
         """
