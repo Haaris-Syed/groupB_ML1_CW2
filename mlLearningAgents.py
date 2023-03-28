@@ -252,7 +252,12 @@ class QLearnAgent(Agent):
             The exploration value
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # return utility as value is counts is bigger than self.maxAttempts
+        # otherwise return infinity
+        if counts > self.maxAttempts:
+            return utility
+        else:
+            return float('inf')
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
