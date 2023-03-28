@@ -200,7 +200,7 @@ class QLearnAgent(Agent):
 
         maxQValue = self.maxQValue(nextState)
         tdError = reward + self.gamma * (maxQValue - self.getQValue(state, action))
-        self.QTable[(state, self.prevAction)] = self.QTable[(state, self.prevAction)] + self.alpha * tdError
+        self.QTable[(state, self.prevAction)] = self.QTable[(state, self.prevAction)] + self.alpha * self.getCount(state, action) * tdError
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -251,7 +251,7 @@ class QLearnAgent(Agent):
         Returns:
             The exploration value
         """
-        "*** YOUR CODE HERE ***"
+
         # return utility as value is counts is bigger than self.maxAttempts
         # otherwise return infinity
         if counts > self.maxAttempts:
@@ -293,7 +293,8 @@ class QLearnAgent(Agent):
         if not legal:
             self.QTable[(self.prevState, None)] = rewardSignal
         if self.prevState is not None:
-            self.learn(self.prevState, action, self.prevReward, currState)
+            self.updateCount(self.prevState, self.prevAction)
+            self.learn(self.prevState, self.prevAction, self.prevReward, currState)
 
         self.prevState, self.prevAction, self.prevReward = currState, action, rewardSignal
 
