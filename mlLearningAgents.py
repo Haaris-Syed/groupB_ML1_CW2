@@ -47,17 +47,18 @@ class GameStateFeatures:
             state: A given game state object
         """
         self.state = state
-        self.pacPosition = state.getPacmanPosition()
-        self.ghostPositions = state.getGhostPositions()
-        self.foodLocs = state.getFood()
-        # state.getScore()
+        self.pacPosition = tuple(state.getPacmanPosition())
+        self.ghostPositions = tuple(state.getGhostPositions())
+        self.foodLocs = tuple(tuple(i) for i in state.getFood())
 
     def __hash__(self):
-        hash((self.pacPosition, self.ghostPositions, self.foodLocs))
-        
-    def __eq__(self, __value: object):
-        hash(self) == hash(__value)
-    
+        return hash((self.pacPosition, self.ghostPositions, self.foodLocs))
+
+    def __eq__(self, other):
+        if isinstance(other, GameStateFeatures):
+            return (self.pacPosition, self.ghostPositions, self.foodLocs) == (other.pacPosition, other.ghostPositions, other.foodLocs)
+        return False
+
     def getLegalActions(self):
         legal = self.state.getLegalPacmanActions()
         if Directions.STOP in legal:
@@ -99,8 +100,8 @@ class QLearnAgent(Agent):
         self.numTraining = int(numTraining)
         # Count the number of games we have played
         self.episodesSoFar = 0
-        self.QTable = dict()
-        self.freqTable = dict()
+        self.QTable = util.Counter()
+        self.freqTable = util.Counter()
         self.prevState = None
         self.prevAction = None
         self.prevReward = None
@@ -172,10 +173,13 @@ class QLearnAgent(Agent):
         Returns:
             q_value: the maximum estimated Q-value attainable from the state
         """
-        # util.raiseNotDefined()
+
         actions = state.getLegalActions()
 
-        return max([self.getQValue(state, action) for action in actions])
+        if actions:
+            return max([self.getQValue(state, action) for action in actions])
+        else:
+            return 0.0
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -196,7 +200,7 @@ class QLearnAgent(Agent):
 
         maxQValue = self.maxQValue(nextState)
         tdError = reward + self.gamma * (maxQValue - self.getQValue(state, action))
-        self.QTable[(state, self.prevAction)] += self.alpha * tdError
+        self.QTable[(state, self.prevAction)] = self.QTable[(state, self.prevAction)] + self.alpha * tdError
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -210,8 +214,8 @@ class QLearnAgent(Agent):
             state: Starting state
             action: Action taken
         """
-        "*** YOUR CODE HERE ***"
-        self.QTable[(state, action)] = self.QTable.get([(state, action)], 0) + 1
+
+        self.freqTable[(state, action)] += 1
 
     # WARNING: You will be tested on the functionality of this method
     # DO NOT change the function signature
@@ -226,7 +230,7 @@ class QLearnAgent(Agent):
         Returns:
             Number of times that the action has been taken in a given state
         """
-        "*** YOUR CODE HERE ***"
+
         return self.freqTable[(state, action)]
 
     # WARNING: You will be tested on the functionality of this method
@@ -266,22 +270,27 @@ class QLearnAgent(Agent):
         Returns:
             The action to take
         """
-        print("Score: ", state.getScore())
-        # The data we have about the state of the game
+
         legal = state.getLegalPacmanActions()
         if Directions.STOP in legal:
             legal.remove(Directions.STOP)
 
         currState = GameStateFeatures(state)
         qValues = [[self.getQValue(currState, action), action] for action in legal]
-        rewardSignal = self.computeReward(self.prevState.getGameState(), currState.getGameState())
+
+        rewardSignal = self.computeReward(self.prevState.getGameState(), currState.getGameState()) if self.prevState else 1
+
+        # if util.flipCoin(self.epsilon):
+        #     action = random.choice(legal)
+        # else:
+        action = max(qValues, key=lambda x: x[0])[1] if qValues else random.choice(legal)
 
         if not legal:
             self.QTable[(self.prevState, None)] = rewardSignal
-        if self.prevState:
-            action = max(qValues, key=lambda x: x[0])[1] if qValues else None
+        if self.prevState is not None:
             self.learn(self.prevState, action, self.prevReward, currState)
-            self.prevState, self.prevAction, self.prevReward = currState, action, rewardSignal
+
+        self.prevState, self.prevAction, self.prevReward = currState, action, rewardSignal
 
         return self.prevAction
 
